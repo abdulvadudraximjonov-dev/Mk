@@ -3,7 +3,6 @@ from telebot import types
 from flask import Flask
 from threading import Thread
 
-# 1. Web Server (Render 24/7 ishlashi uchun)
 app = Flask('')
 @app.route('/')
 def home(): return "Bot Active"
@@ -12,11 +11,10 @@ Thread(target=lambda: app.run(host='0.0.0.0', port=8080)).start()
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN') or '8559834342:AAGFraSt01b4Mv-cygjqtYQkD854KCBuFSE'
 bot = telebot.TeleBot(TOKEN)
 
-# Sizning Telegram ID raqamingiz:
 ADMIN_ID = 8113271428  
 
 user_languages = {}
-user_states = {} # Admin bilan bog'lanish rejimini saqlash uchun
+user_states = {}
 
 TEXTS = {
     'uz': {
@@ -25,17 +23,17 @@ TEXTS = {
         'btn_wp': "🖼 Anime Rasm",
         'btn_genre': "📂 Janrlar",
         'btn_top': "🏆 Top 10 Animelar",
-        'btn_lang': "🌐 Tilni o'zgartirish / Язык / Language",
+        'btn_lang': "🌐 Tilni o'zgartirish",
         'btn_help': "ℹ️ Yordam",
         'btn_contact': "✉️ Admin bilan bog'lanish",
         'watch': "🍿 Online Tomosha Qilish",
         'more_wp': "🔄 Yana rasm olish",
         'choose_genre': "🎭 **O'zingizga ma'qul janrni tanlang:**",
-        'select_lang': "🌐 **Iltimos, tilni tanlang / Пожалуйста, выберите язык:**",
+        'select_lang': "🌐 **Iltimos, tilni tanlang:**",
         'lang_changed': "✅ Til muvaffaqiyatli o'zgartirildi!",
-        'contact_prompt': "✍️ Adminga yubormoqchi bo'lgan xabaringizni (savol, taklif yoki shikoyat) yozib qoldiring:",
-        'msg_sent': "✅ Xabaringiz adminga yuborildi! Tez orada javob beramiz.",
-        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Anime izlash uchun nomini yozing.\n• Tasodifiy tavsiya yoki HD Wallpaper rasmlar oling.\n\n📢 **Bizning kanal / Aloqa:** @Ani_TeamUZ"
+        'contact_prompt': "✍️ Adminga yubormoqchi bo'lgan xabaringizni yozib qoldiring:",
+        'msg_sent': "✅ Xabaringiz adminga yuborildi!",
+        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Anime izlash uchun nomini yozing.\n• Tasodifiy tavsiya yoki HD Wallpaper rasmlar oling.\n\n📢 **Kanal:** @Ani_TeamUZ"
     },
     'ru': {
         'welcome': "👋 **Привет!** Добро пожаловать в Sugoi Anime Bot!\n\nВведите название аниме или используйте меню:",
@@ -43,35 +41,35 @@ TEXTS = {
         'btn_wp': "🖼 Аниме Картинка",
         'btn_genre': "📂 Жанры",
         'btn_top': "🏆 Топ 10 Аниме",
-        'btn_lang': "🌐 Tilni o'zgartirish / Язык / Language",
+        'btn_lang': "🌐 Язык",
         'btn_help': "ℹ️ Помощь",
         'btn_contact': "✉️ Связаться с админом",
         'watch': "🍿 Смотреть Онлайн",
         'more_wp': "🔄 Ещё картинка",
-        'choose_genre': "🎭 **Выберите подходящий жанр:**",
+        'choose_genre': "🎭 **Выберите жанр:**",
         'select_lang': "🌐 **Пожалуйста, выберите язык:**",
         'lang_changed': "✅ Язык успешно изменен!",
-        'contact_prompt': "✍️ Напишите ваше сообщение (вопрос или предложение) для админа:",
-        'msg_sent': "✅ Ваше сообщение отправлено админу! Скоро ответим.",
-        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Введите название для поиска аниме.\n• Получайте случайные рекомендации и HD обои.\n\n📢 **Наш канал / Связь:** @Ani_TeamUZ"
+        'contact_prompt': "✍️ Напишите ваше сообщение для админа:",
+        'msg_sent': "✅ Ваше сообщение отправлено админу!",
+        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Введите название для поиска аниме."
     },
     'en': {
-        'welcome': "👋 **Hello!** Welcome to Sugoi Anime Bot!\n\nType any anime name or use the menu below:",
+        'welcome': "👋 **Hello!** Welcome to Sugoi Anime Bot!\n\nType any anime name or use the menu:",
         'btn_rand': "🎲 Random Anime",
         'btn_wp': "🖼 Anime Wallpaper",
         'btn_genre': "📂 Genres",
         'btn_top': "🏆 Top 10 Anime",
-        'btn_lang': "🌐 Tilni o'zgartirish / Язык / Language",
+        'btn_lang': "🌐 Language",
         'btn_help': "ℹ️ Help",
         'btn_contact': "✉️ Contact Admin",
         'watch': "🍿 Watch Online",
         'more_wp': "🔄 Get another wallpaper",
-        'choose_genre': "🎭 **Select a genre you like:**",
+        'choose_genre': "🎭 **Select a genre:**",
         'select_lang': "🌐 **Please select a language:**",
-        'lang_changed': "✅ Language successfully changed!",
-        'contact_prompt': "✍️ Type your message (question or feedback) for the admin:",
-        'msg_sent': "✅ Your message has been sent to the admin!",
-        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Type an anime name to search.\n• Get random recommendations and HD wallpapers.\n\n📢 **Our channel / Contact:** @Ani_TeamUZ"
+        'lang_changed': "✅ Language changed!",
+        'contact_prompt': "✍️ Type your message for the admin:",
+        'msg_sent': "✅ Your message has been sent!",
+        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Type an anime name to search."
     }
 }
 
@@ -84,7 +82,6 @@ ANIMES_LIST = [
 ]
 
 WALLPAPERS_POOL = [
-    "https://pic.re/image",
     "https://i.waifu.pics/4q9Xm5_.jpg",
     "https://i.waifu.pics/1vI-wT_.jpg"
 ]
@@ -142,19 +139,18 @@ def cb_setlang(c):
     bot.answer_callback_query(c.id, t['lang_changed'])
     bot.send_message(c.message.chat.id, t['welcome'], parse_mode="Markdown", reply_markup=main_kb(c.message.chat.id))
 
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_lang'] for l in TEXTS))
+@bot.message_handler(func=lambda m: m.text and any(m.text == TEXTS[l]['btn_lang'] for l in TEXTS))
 def change_language_msg(m):
     user_states[m.chat.id] = None
-    bot.send_message(m.chat.id, "🌐 **Tilni tanlang / Выберите язык / Select language:**", parse_mode="Markdown", reply_markup=lang_inline_kb())
+    bot.send_message(m.chat.id, "🌐 **Tilni tanlang:**", parse_mode="Markdown", reply_markup=lang_inline_kb())
 
-# ✉️ ADMIN BILAN BOG'LANISH TUGMASI
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_contact'] for l in TEXTS))
+@bot.message_handler(func=lambda m: m.text and any(m.text == TEXTS[l]['btn_contact'] for l in TEXTS))
 def contact_admin_start(m):
     lang = get_lang(m.chat.id)
     user_states[m.chat.id] = 'waiting_feedback'
     bot.send_message(m.chat.id, TEXTS[lang]['contact_prompt'], parse_mode="Markdown")
 
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_rand'] for l in TEXTS) or m.text == "/random")
+@bot.message_handler(func=lambda m: m.text and (any(m.text == TEXTS[l]['btn_rand'] for l in TEXTS) or m.text == "/random"))
 def rand_anime(m):
     user_states[m.chat.id] = None
     lang = get_lang(m.chat.id)
@@ -166,7 +162,7 @@ def rand_anime(m):
     )
     bot.send_photo(m.chat.id, item['img'], caption=f"🎬 **{item['title']}**\n⭐️ {item['score']}/10", parse_mode="Markdown", reply_markup=markup)
 
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_wp'] for l in TEXTS) or "wallpaper" in m.text.lower())
+@bot.message_handler(func=lambda m: m.text and (any(m.text == TEXTS[l]['btn_wp'] for l in TEXTS) or "wallpaper" in m.text.lower() or "rasm" in m.text.lower()))
 def send_wp(m):
     user_states[m.chat.id] = None
     lang = get_lang(m.chat.id)
@@ -184,7 +180,7 @@ def cb_wp(c):
     bot.send_photo(c.message.chat.id, url, caption="🖼 **HD Wallpaper!**", parse_mode="Markdown", reply_markup=btn)
     bot.answer_callback_query(c.id)
 
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_genre'] for l in TEXTS))
+@bot.message_handler(func=lambda m: m.text and any(m.text == TEXTS[l]['btn_genre'] for l in TEXTS))
 def send_genres(m):
     user_states[m.chat.id] = None
     lang = get_lang(m.chat.id)
@@ -205,21 +201,20 @@ def cb_genre(c):
         bot.send_photo(c.message.chat.id, item['img'], caption=f"🎬 **{item['title']}**\n⭐️ {item['score']}/10", parse_mode="Markdown", reply_markup=markup)
     bot.answer_callback_query(c.id)
 
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_top'] for l in TEXTS))
+@bot.message_handler(func=lambda m: m.text and any(m.text == TEXTS[l]['btn_top'] for l in TEXTS))
 def top_animes(m):
     user_states[m.chat.id] = None
-    text = "🏆 **Top Animelar / Топ Аниме:**\n\n"
+    text = "🏆 **Top Animelar:**\n\n"
     for idx, item in enumerate(ANIMES_LIST, 1):
         text += f"{idx}. **{item['title']}** — ⭐️ {item['score']}/10\n"
     bot.send_message(m.chat.id, text, parse_mode="Markdown")
 
-@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_help'] for l in TEXTS))
+@bot.message_handler(func=lambda m: m.text and any(m.text == TEXTS[l]['btn_help'] for l in TEXTS))
 def about_bot(m):
     user_states[m.chat.id] = None
     lang = get_lang(m.chat.id)
     bot.send_message(m.chat.id, TEXTS[lang]['help_text'], parse_mode="Markdown")
 
-# 📩 ADMIN UCHUN JAVOB BERISH REJIMI (Admin foydalanuvchining xabariga 'Reply' qilsa)
 @bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.reply_to_message is not None)
 def reply_to_user(m):
     try:
@@ -228,15 +223,14 @@ def reply_to_user(m):
             if "ID:" in line:
                 target_user_id = int(line.split("ID:")[1].strip())
                 bot.send_message(target_user_id, f"👨‍💻 **Admin javobi:**\n\n{m.text}")
-                bot.send_message(ADMIN_ID, "✅ Javobingiz foydalanuvchiga yetkazildi!")
+                bot.send_message(ADMIN_ID, "✅ Javob yetkazildi!")
                 return
     except Exception as e:
-        bot.send_message(ADMIN_ID, f"❌ Javob yuborishda xatolik: {e}")
+        bot.send_message(ADMIN_ID, f"❌ Xatolik: {e}")
 
-# 💬 FOYDALANUVCHI XABAR YUBORGANDA ADMINGA YUBORISH
 @bot.message_handler(func=lambda m: True)
 def handle_all_messages(m):
-    if m.text.startswith('/'): return
+    if not m.text or m.text.startswith('/'): return
     
     if user_states.get(m.chat.id) == 'waiting_feedback':
         user_states[m.chat.id] = None
@@ -244,7 +238,7 @@ def handle_all_messages(m):
         
         admin_msg = (
             f"📩 **Yangi xabar!**\n\n"
-            f"👤 **Kimdan:** {m.from_user.first_name} (@{m.from_user.username or 'username_yoq'})\n"
+            f"👤 **Kimdan:** {m.from_user.first_name} (@{m.from_user.username or 'yoq'})\n"
             f"🆔 **ID:** {m.chat.id}\n\n"
             f"💬 **Xabar:**\n{m.text}"
         )
@@ -262,7 +256,7 @@ def handle_all_messages(m):
     btn = types.InlineKeyboardMarkup().add(
         types.InlineKeyboardButton(t['watch'], url=f"https://www.google.com/search?q={q}+anime+online")
     )
-    bot.send_message(m.chat.id, f"🔎 **{m.text}**", parse_mode="Markdown", reply_markup=btn)
+    bot.send_message(m.chat.id, f"🔎 **{m.text}** bo'yicha qidiruv:", parse_mode="Markdown", reply_markup=btn)
 
 bot.polling(none_stop=True)
     
