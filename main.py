@@ -3,9 +3,12 @@ from telebot import types
 from flask import Flask
 from threading import Thread
 
+# 1. Web Server (Render 24/7 ishlashi uchun)
 app = Flask('')
 @app.route('/')
-def home(): return "Bot Active"
+def home(): 
+    return "Bot Active"
+
 Thread(target=lambda: app.run(host='0.0.0.0', port=8080)).start()
 
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN') or '8559834342:AAGFraSt01b4Mv-cygjqtYQkD854KCBuFSE'
@@ -123,7 +126,10 @@ def get_random_wp():
         if r.get('url'): return r['url']
     except: pass
     return random.choice(WALLPAPERS_POOL)
-    @bot.message_handler(commands=['start'])
+
+# --- HANDLERLAR ---
+
+@bot.message_handler(commands=['start'])
 def start(m):
     user_states[m.chat.id] = None
     lang = get_lang(m.chat.id)
