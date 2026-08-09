@@ -9,91 +9,260 @@ app = Flask('')
 def home(): return "Bot Active"
 Thread(target=lambda: app.run(host='0.0.0.0', port=8080)).start()
 
-# Tokenni to'g'ridan-to'g'ri biriktirish (bo'sh qiymat xatolarini oldini oladi)
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN') or '8559834342:AAGFraSt01b4Mv-cygjqtYQkD854KCBuFSE'
 bot = telebot.TeleBot(TOKEN)
 
+# Sizning Telegram ID raqamingiz:
+ADMIN_ID = 8113271428  
+
+user_languages = {}
+user_states = {} # Admin bilan bog'lanish rejimini saqlash uchun
+
+TEXTS = {
+    'uz': {
+        'welcome': "👋 **Salom!** Sugoi Anime Botiga xush kelibsiz!\n\nIstalgan anime nomini yozing yoki menyudan foydalaning:",
+        'btn_rand': "🎲 Tasodifiy Anime",
+        'btn_wp': "🖼 Anime Rasm",
+        'btn_genre': "📂 Janrlar",
+        'btn_top': "🏆 Top 10 Animelar",
+        'btn_lang': "🌐 Tilni o'zgartirish / Язык / Language",
+        'btn_help': "ℹ️ Yordam",
+        'btn_contact': "✉️ Admin bilan bog'lanish",
+        'watch': "🍿 Online Tomosha Qilish",
+        'more_wp': "🔄 Yana rasm olish",
+        'choose_genre': "🎭 **O'zingizga ma'qul janrni tanlang:**",
+        'select_lang': "🌐 **Iltimos, tilni tanlang / Пожалуйста, выберите язык:**",
+        'lang_changed': "✅ Til muvaffaqiyatli o'zgartirildi!",
+        'contact_prompt': "✍️ Adminga yubormoqchi bo'lgan xabaringizni (savol, taklif yoki shikoyat) yozib qoldiring:",
+        'msg_sent': "✅ Xabaringiz adminga yuborildi! Tez orada javob beramiz.",
+        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Anime izlash uchun nomini yozing.\n• Tasodifiy tavsiya yoki HD Wallpaper rasmlar oling.\n\n📢 **Bizning kanal / Aloqa:** @Ani_TeamUZ"
+    },
+    'ru': {
+        'welcome': "👋 **Привет!** Добро пожаловать в Sugoi Anime Bot!\n\nВведите название аниме или используйте меню:",
+        'btn_rand': "🎲 Случайное Аниме",
+        'btn_wp': "🖼 Аниме Картинка",
+        'btn_genre': "📂 Жанры",
+        'btn_top': "🏆 Топ 10 Аниме",
+        'btn_lang': "🌐 Tilni o'zgartirish / Язык / Language",
+        'btn_help': "ℹ️ Помощь",
+        'btn_contact': "✉️ Связаться с админом",
+        'watch': "🍿 Смотреть Онлайн",
+        'more_wp': "🔄 Ещё картинка",
+        'choose_genre': "🎭 **Выберите подходящий жанр:**",
+        'select_lang': "🌐 **Пожалуйста, выберите язык:**",
+        'lang_changed': "✅ Язык успешно изменен!",
+        'contact_prompt': "✍️ Напишите ваше сообщение (вопрос или предложение) для админа:",
+        'msg_sent': "✅ Ваше сообщение отправлено админу! Скоро ответим.",
+        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Введите название для поиска аниме.\n• Получайте случайные рекомендации и HD обои.\n\n📢 **Наш канал / Связь:** @Ani_TeamUZ"
+    },
+    'en': {
+        'welcome': "👋 **Hello!** Welcome to Sugoi Anime Bot!\n\nType any anime name or use the menu below:",
+        'btn_rand': "🎲 Random Anime",
+        'btn_wp': "🖼 Anime Wallpaper",
+        'btn_genre': "📂 Genres",
+        'btn_top': "🏆 Top 10 Anime",
+        'btn_lang': "🌐 Tilni o'zgartirish / Язык / Language",
+        'btn_help': "ℹ️ Help",
+        'btn_contact': "✉️ Contact Admin",
+        'watch': "🍿 Watch Online",
+        'more_wp': "🔄 Get another wallpaper",
+        'choose_genre': "🎭 **Select a genre you like:**",
+        'select_lang': "🌐 **Please select a language:**",
+        'lang_changed': "✅ Language successfully changed!",
+        'contact_prompt': "✍️ Type your message (question or feedback) for the admin:",
+        'msg_sent': "✅ Your message has been sent to the admin!",
+        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Type an anime name to search.\n• Get random recommendations and HD wallpapers.\n\n📢 **Our channel / Contact:** @Ani_TeamUZ"
+    }
+}
+
 ANIMES_LIST = [
-    {"title": "Attack on Titan", "score": "9.0", "img": "https://cdn.myanimelist.net/images/anime/10/47347.jpg"},
-    {"title": "Jujutsu Kaisen", "score": "8.7", "img": "https://cdn.myanimelist.net/images/anime/1171/109222.jpg"},
-    {"title": "Demon Slayer", "score": "8.5", "img": "https://cdn.myanimelist.net/images/anime/1286/99889.jpg"},
-    {"title": "One Piece", "score": "8.9", "img": "https://cdn.myanimelist.net/images/anime/6/73245.jpg"},
-    {"title": "Naruto Shippuden", "score": "8.2", "img": "https://cdn.myanimelist.net/images/anime/1565/111305.jpg"},
-    {"title": "Death Note", "score": "8.6", "img": "https://cdn.myanimelist.net/images/anime/9/9444.jpg"},
-    {"title": "Bleach", "score": "7.9", "img": "https://cdn.myanimelist.net/images/anime/3/40451.jpg"},
-    {"title": "Solo Leveling", "score": "8.4", "img": "https://cdn.myanimelist.net/images/anime/1172/140880.jpg"},
-    {"title": "Spirited Away", "score": "8.8", "img": "https://cdn.myanimelist.net/images/anime/6/79597.jpg"},
-    {"title": "Hunter x Hunter", "score": "9.0", "img": "https://cdn.myanimelist.net/images/anime/11/33657.jpg"}
+    {"title": "Attack on Titan", "score": "9.0", "genre": "action", "img": "https://cdn.myanimelist.net/images/anime/10/47347.jpg"},
+    {"title": "Jujutsu Kaisen", "score": "8.7", "genre": "action", "img": "https://cdn.myanimelist.net/images/anime/1171/109222.jpg"},
+    {"title": "Demon Slayer", "score": "8.5", "genre": "action", "img": "https://cdn.myanimelist.net/images/anime/1286/99889.jpg"},
+    {"title": "One Piece", "score": "8.9", "genre": "adventure", "img": "https://cdn.myanimelist.net/images/anime/6/73245.jpg"},
+    {"title": "Your Name", "score": "8.8", "genre": "romance", "img": "https://cdn.myanimelist.net/images/anime/5/87048.jpg"}
 ]
 
 WALLPAPERS_POOL = [
-    "https://images.alphacoders.com/132/1328328.jpeg",
-    "https://images.alphacoders.com/129/1298314.jpg",
-    "https://images.alphacoders.com/112/1123013.jpg",
-    "https://images.alphacoders.com/128/1288599.png",
-    "https://images.alphacoders.com/131/1314562.jpeg"
+    "https://pic.re/image",
+    "https://i.waifu.pics/4q9Xm5_.jpg",
+    "https://i.waifu.pics/1vI-wT_.jpg"
 ]
 
-def main_kb():
+def get_lang(uid):
+    return user_languages.get(uid, 'uz')
+
+def main_kb(uid):
+    lang = get_lang(uid)
+    t = TEXTS[lang]
     kb = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    kb.add("🎲 Tasodifiy Anime", "🖼 Anime Rasm")
+    kb.add(t['btn_rand'], t['btn_wp'])
+    kb.add(t['btn_genre'], t['btn_top'])
+    kb.add(t['btn_contact'], t['btn_help'])
+    kb.add(t['btn_lang'])
     return kb
 
-def get_random_anime():
-    try:
-        r = requests.get("https://api.jikan.moe/v4/random/anime", timeout=4).json()
-        data = r.get('data', {})
-        t, s, i = data.get('title'), data.get('score', '8.0'), data.get('images', {}).get('jpg', {}).get('large_image_url')
-        if t and i: return t, s, i
-    except: pass
-    item = random.choice(ANIMES_LIST)
-    return item['title'], item['score'], item['img']
+def lang_inline_kb():
+    markup = types.InlineKeyboardMarkup(row_width=3)
+    markup.add(
+        types.InlineKeyboardButton("🇺🇿 O'zbek", callback_data="setlang_uz"),
+        types.InlineKeyboardButton("🇷🇺 Русский", callback_data="setlang_ru"),
+        types.InlineKeyboardButton("🇬🇧 English", callback_data="setlang_en")
+    )
+    return markup
+
+def genres_kb():
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(
+        types.InlineKeyboardButton("💥 Action", callback_data="genre_action"),
+        types.InlineKeyboardButton("💖 Romance", callback_data="genre_romance"),
+        types.InlineKeyboardButton("🔮 Fantasy", callback_data="genre_fantasy")
+    )
+    return markup
 
 def get_random_wp():
     try:
-        r = requests.get("https://nekos.best/api/v2/wallpaper", timeout=4).json()
-        if r.get('results'): return r['results'][0]['url']
+        r = requests.get("https://api.waifu.pics/sfw/waifu", timeout=4).json()
+        if r.get('url'): return r['url']
     except: pass
     return random.choice(WALLPAPERS_POOL)
+    # --- HANDLERLAR ---
 
 @bot.message_handler(commands=['start'])
 def start(m):
-    bot.send_message(m.chat.id, f"Salom, {m.from_user.first_name}! 🍿\n\nIstalgan anime nomini yozing yoki pastdagi tugmalardan foydalaning:", reply_markup=main_kb())
+    user_states[m.chat.id] = None
+    lang = get_lang(m.chat.id)
+    bot.send_message(m.chat.id, TEXTS[lang]['select_lang'], parse_mode="Markdown", reply_markup=lang_inline_kb())
 
-@bot.message_handler(func=lambda m: "Tasodifiy Anime" in m.text or m.text == "/random")
+@bot.callback_query_handler(func=lambda c: c.data.startswith("setlang_"))
+def cb_setlang(c):
+    lang_code = c.data.split("_")[1]
+    user_languages[c.message.chat.id] = lang_code
+    t = TEXTS[lang_code]
+    bot.answer_callback_query(c.id, t['lang_changed'])
+    bot.send_message(c.message.chat.id, t['welcome'], parse_mode="Markdown", reply_markup=main_kb(c.message.chat.id))
+
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_lang'] for l in TEXTS))
+def change_language_msg(m):
+    user_states[m.chat.id] = None
+    bot.send_message(m.chat.id, "🌐 **Tilni tanlang / Выберите язык / Select language:**", parse_mode="Markdown", reply_markup=lang_inline_kb())
+
+# ✉️ ADMIN BILAN BOG'LANISH TUGMASI
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_contact'] for l in TEXTS))
+def contact_admin_start(m):
+    lang = get_lang(m.chat.id)
+    user_states[m.chat.id] = 'waiting_feedback'
+    bot.send_message(m.chat.id, TEXTS[lang]['contact_prompt'], parse_mode="Markdown")
+
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_rand'] for l in TEXTS) or m.text == "/random")
 def rand_anime(m):
-    title, score, img = get_random_anime()
-    q = urllib.parse.quote(title)
-    markup = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("🍿 Online Tomosha Qilish", url=f"https://www.google.com/search?q={q}+anime+online+tomosha+qilish"))
-    try:
-        bot.send_photo(m.chat.id, img, caption=f"🎬 **Nomi:** {title}\n⭐️ **Reytingi:** {score}/10", parse_mode="Markdown", reply_markup=markup)
-    except:
-        bot.send_message(m.chat.id, f"🎬 **Nomi:** {title}\n⭐️ **Reytingi:** {score}/10", parse_mode="Markdown", reply_markup=markup)
+    user_states[m.chat.id] = None
+    lang = get_lang(m.chat.id)
+    t = TEXTS[lang]
+    item = random.choice(ANIMES_LIST)
+    q = urllib.parse.quote(item['title'])
+    markup = types.InlineKeyboardMarkup().add(
+        types.InlineKeyboardButton(t['watch'], url=f"https://www.google.com/search?q={q}+anime+online")
+    )
+    bot.send_photo(m.chat.id, item['img'], caption=f"🎬 **{item['title']}**\n⭐️ {item['score']}/10", parse_mode="Markdown", reply_markup=markup)
 
-@bot.message_handler(func=lambda m: "Anime Rasm" in m.text or m.text == "/wallpaper")
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_wp'] for l in TEXTS) or "wallpaper" in m.text.lower())
 def send_wp(m):
+    user_states[m.chat.id] = None
+    lang = get_lang(m.chat.id)
+    t = TEXTS[lang]
     url = get_random_wp()
-    btn = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("🔄 Boshqa Random Wallpaper", callback_data="next_wp"))
-    try:
-        bot.send_photo(m.chat.id, url, caption="🖼 **HD Anime Wallpaper!**", parse_mode="Markdown", reply_markup=btn)
-    except:
-        bot.send_photo(m.chat.id, random.choice(WALLPAPERS_POOL), caption="🖼 **HD Anime Wallpaper!**", parse_mode="Markdown", reply_markup=btn)
+    btn = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(t['more_wp'], callback_data="next_wp"))
+    bot.send_photo(m.chat.id, url, caption="🖼 **HD Wallpaper!**", parse_mode="Markdown", reply_markup=btn)
 
 @bot.callback_query_handler(func=lambda c: c.data == "next_wp")
 def cb_wp(c):
+    lang = get_lang(c.message.chat.id)
+    t = TEXTS[lang]
     url = get_random_wp()
-    btn = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("🔄 Boshqa Random Wallpaper", callback_data="next_wp"))
-    try:
-        bot.send_photo(c.message.chat.id, url, caption="🖼 **Yangi HD Wallpaper!**", parse_mode="Markdown", reply_markup=btn)
-        bot.answer_callback_query(c.id)
-    except:
-        bot.answer_callback_query(c.id)
+    btn = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton(t['more_wp'], callback_data="next_wp"))
+    bot.send_photo(c.message.chat.id, url, caption="🖼 **HD Wallpaper!**", parse_mode="Markdown", reply_markup=btn)
+    bot.answer_callback_query(c.id)
 
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_genre'] for l in TEXTS))
+def send_genres(m):
+    user_states[m.chat.id] = None
+    lang = get_lang(m.chat.id)
+    bot.send_message(m.chat.id, TEXTS[lang]['choose_genre'], parse_mode="Markdown", reply_markup=genres_kb())
+
+@bot.callback_query_handler(func=lambda c: c.data.startswith("genre_"))
+def cb_genre(c):
+    lang = get_lang(c.message.chat.id)
+    t = TEXTS[lang]
+    genre = c.data.split("_")[1]
+    filtered = [a for a in ANIMES_LIST if a.get('genre') == genre]
+    if filtered:
+        item = random.choice(filtered)
+        q = urllib.parse.quote(item['title'])
+        markup = types.InlineKeyboardMarkup().add(
+            types.InlineKeyboardButton(t['watch'], url=f"https://www.google.com/search?q={q}+anime+online")
+        )
+        bot.send_photo(c.message.chat.id, item['img'], caption=f"🎬 **{item['title']}**\n⭐️ {item['score']}/10", parse_mode="Markdown", reply_markup=markup)
+    bot.answer_callback_query(c.id)
+
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_top'] for l in TEXTS))
+def top_animes(m):
+    user_states[m.chat.id] = None
+    text = "🏆 **Top Animelar / Топ Аниме:**\n\n"
+    for idx, item in enumerate(ANIMES_LIST, 1):
+        text += f"{idx}. **{item['title']}** — ⭐️ {item['score']}/10\n"
+    bot.send_message(m.chat.id, text, parse_mode="Markdown")
+
+@bot.message_handler(func=lambda m: any(m.text == TEXTS[l]['btn_help'] for l in TEXTS))
+def about_bot(m):
+    user_states[m.chat.id] = None
+    lang = get_lang(m.chat.id)
+    bot.send_message(m.chat.id, TEXTS[lang]['help_text'], parse_mode="Markdown")
+
+# 📩 ADMIN UCHUN JAVOB BERISH REJIMI (Admin foydalanuvchining xabariga 'Reply' qilsa)
+@bot.message_handler(func=lambda m: m.chat.id == ADMIN_ID and m.reply_to_message is not None)
+def reply_to_user(m):
+    try:
+        lines = m.reply_to_message.text.split('\n')
+        for line in lines:
+            if "ID:" in line:
+                target_user_id = int(line.split("ID:")[1].strip())
+                bot.send_message(target_user_id, f"👨‍💻 **Admin javobi:**\n\n{m.text}")
+                bot.send_message(ADMIN_ID, "✅ Javobingiz foydalanuvchiga yetkazildi!")
+                return
+    except Exception as e:
+        bot.send_message(ADMIN_ID, f"❌ Javob yuborishda xatolik: {e}")
+
+# 💬 FOYDALANUVCHI XABAR YUBORGANDA ADMINGA YUBORISH
 @bot.message_handler(func=lambda m: True)
-def search(m):
+def handle_all_messages(m):
     if m.text.startswith('/'): return
+    
+    if user_states.get(m.chat.id) == 'waiting_feedback':
+        user_states[m.chat.id] = None
+        lang = get_lang(m.chat.id)
+        
+        admin_msg = (
+            f"📩 **Yangi xabar!**\n\n"
+            f"👤 **Kimdan:** {m.from_user.first_name} (@{m.from_user.username or 'username_yoq'})\n"
+            f"🆔 **ID:** {m.chat.id}\n\n"
+            f"💬 **Xabar:**\n{m.text}"
+        )
+        
+        try:
+            bot.send_message(ADMIN_ID, admin_msg, parse_mode="Markdown")
+            bot.send_message(m.chat.id, TEXTS[lang]['msg_sent'], parse_mode="Markdown", reply_markup=main_kb(m.chat.id))
+        except:
+            bot.send_message(m.chat.id, "❌ Xatolik yuz berdi.", reply_markup=main_kb(m.chat.id))
+        return
+
+    lang = get_lang(m.chat.id)
+    t = TEXTS[lang]
     q = urllib.parse.quote(m.text.strip())
-    btn = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("🍿 Saytda Online Tomosha Qilish", url=f"https://www.google.com/search?q={q}+anime+online+tomosha+qilish"))
-    bot.send_message(m.chat.id, f"🔎 **{m.text}** bo'yicha tomosha qilish havolasi:", parse_mode="Markdown", reply_markup=btn)
+    btn = types.InlineKeyboardMarkup().add(
+        types.InlineKeyboardButton(t['watch'], url=f"https://www.google.com/search?q={q}+anime+online")
+    )
+    bot.send_message(m.chat.id, f"🔎 **{m.text}**", parse_mode="Markdown", reply_markup=btn)
 
 bot.polling(none_stop=True)
+    
