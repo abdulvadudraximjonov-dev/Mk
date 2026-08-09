@@ -1,19 +1,25 @@
-import telebot, urllib.parse, random, os, requests
+import telebot
+import urllib.parse
+import random
+import os
+import requests
 from telebot import types
 from flask import Flask
 from threading import Thread
 
-# 1. Web Server (Render 24/7 ishlashi uchun)
 app = Flask('')
+
 @app.route('/')
-def home(): 
-    return "Bot Active"
+def home():
+    return "Anigo Bot is active!"
 
-Thread(target=lambda: app.run(host='0.0.0.0', port=8080)).start()
+def run_server():
+    app.run(host='0.0.0.0', port=8080)
 
-TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN') or '8559834342:AAGFraSt01b4Mv-cygjqtYQkD854KCBuFSE'
+Thread(target=run_server).start()
+
+TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN') or '8619747331:AAGPCSl7ZJS-RQSaZYBFaHeqDOQPgHWhazo'
 bot = telebot.TeleBot(TOKEN)
-
 ADMIN_ID = 8113271428  
 
 user_languages = {}
@@ -21,7 +27,7 @@ user_states = {}
 
 TEXTS = {
     'uz': {
-        'welcome': "👋 **Salom!** Sugoi Anime Botiga xush kelibsiz!\n\nIstalgan anime nomini yozing yoki menyudan foydalaning:",
+        'welcome': "👋 **Salom!** Anigo Anime Botiga xush kelibsiz!\n\nIstalgan anime nomini yozing yoki pastdagi menyudan foydalaning:",
         'btn_rand': "🎲 Tasodifiy Anime",
         'btn_wp': "🖼 Anime Rasm",
         'btn_genre': "📂 Janrlar",
@@ -36,10 +42,10 @@ TEXTS = {
         'lang_changed': "✅ Til muvaffaqiyatli o'zgartirildi!",
         'contact_prompt': "✍️ Adminga yubormoqchi bo'lgan xabaringizni yozib qoldiring:",
         'msg_sent': "✅ Xabaringiz adminga yuborildi!",
-        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Anime izlash uchun nomini yozing.\n• Tasodifiy tavsiya yoki HD Wallpaper rasmlar oling.\n\n📢 **Kanal:** @Ani_TeamUZ"
+        'help_text': "🤖 **Anigo Anime Bot**\n\n• Anime izlash uchun shunchaki nomini yozing.\n• Tasodifiy tavsiya va HD rasmlar oling."
     },
     'ru': {
-        'welcome': "👋 **Привет!** Добро пожаловать в Sugoi Anime Bot!\n\nВведите название аниме или используйте меню:",
+        'welcome': "👋 **Привет!** Добро пожаловать в Anigo Anime Bot!\n\nВведите название аниме или используйте меню:",
         'btn_rand': "🎲 Случайное Аниме",
         'btn_wp': "🖼 Аниме Картинка",
         'btn_genre': "📂 Жанры",
@@ -54,10 +60,10 @@ TEXTS = {
         'lang_changed': "✅ Язык успешно изменен!",
         'contact_prompt': "✍️ Напишите ваше сообщение для админа:",
         'msg_sent': "✅ Ваше сообщение отправлено админу!",
-        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Введите название для поиска аниме."
+        'help_text': "🤖 **Anigo Anime Bot**\n\n• Введите название для поиска аниме."
     },
     'en': {
-        'welcome': "👋 **Hello!** Welcome to Sugoi Anime Bot!\n\nType any anime name or use the menu:",
+        'welcome': "👋 **Hello!** Welcome to Anigo Anime Bot!\n\nType any anime name or use the menu:",
         'btn_rand': "🎲 Random Anime",
         'btn_wp': "🖼 Anime Wallpaper",
         'btn_genre': "📂 Genres",
@@ -72,7 +78,7 @@ TEXTS = {
         'lang_changed': "✅ Language changed!",
         'contact_prompt': "✍️ Type your message for the admin:",
         'msg_sent': "✅ Your message has been sent!",
-        'help_text': "🤖 **Sugoi Anime Bot**\n\n• Type an anime name to search."
+        'help_text': "🤖 **Anigo Anime Bot**\n\n• Type an anime name to search."
     }
 }
 
@@ -123,11 +129,11 @@ def genres_kb():
 def get_random_wp():
     try:
         r = requests.get("https://api.waifu.pics/sfw/waifu", timeout=4).json()
-        if r.get('url'): return r['url']
-    except: pass
+        if r.get('url'):
+            return r['url']
+    except:
+        pass
     return random.choice(WALLPAPERS_POOL)
-
-# --- HANDLERLAR ---
 
 @bot.message_handler(commands=['start'])
 def start(m):
@@ -234,7 +240,8 @@ def reply_to_user(m):
 
 @bot.message_handler(func=lambda m: True)
 def handle_all_messages(m):
-    if not m.text or m.text.startswith('/'): return
+    if not m.text or m.text.startswith('/'):
+        return
     
     if user_states.get(m.chat.id) == 'waiting_feedback':
         user_states[m.chat.id] = None
@@ -262,5 +269,5 @@ def handle_all_messages(m):
     )
     bot.send_message(m.chat.id, f"🔎 **{m.text}** bo'yicha qidiruv:", parse_mode="Markdown", reply_markup=btn)
 
-bot.polling(none_stop=True)
-    
+bot.infinity_polling()
+
