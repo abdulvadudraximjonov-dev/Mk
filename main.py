@@ -123,9 +123,7 @@ def get_random_wp():
         if r.get('url'): return r['url']
     except: pass
     return random.choice(WALLPAPERS_POOL)
-    # --- HANDLERLAR ---
-
-@bot.message_handler(commands=['start'])
+    @bot.message_handler(commands=['start'])
 def start(m):
     user_states[m.chat.id] = None
     lang = get_lang(m.chat.id)
