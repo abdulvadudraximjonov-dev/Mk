@@ -9,7 +9,8 @@ app = Flask('')
 def home(): return "Bot Active"
 Thread(target=lambda: app.run(host='0.0.0.0', port=8080)).start()
 
-TOKEN = os.environ.get('8559834342:AAGFraSt01b4Mv-cygjqtYQkD854KCBuFSE')
+# Token kodingizning o'ziga joylandi
+TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '8559834342:AAGFraSt01b4Mv-cygjqtYQkD854KCBuFSE')
 bot = telebot.TeleBot(TOKEN)
 
 ANIMES_LIST = [
@@ -96,4 +97,3 @@ def search(m):
     bot.send_message(m.chat.id, f"🔎 **{m.text}** bo'yicha tomosha qilish havolasi:", parse_mode="Markdown", reply_markup=btn)
 
 bot.polling(none_stop=True)
-  
